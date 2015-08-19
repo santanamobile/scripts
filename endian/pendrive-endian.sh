@@ -1,8 +1,10 @@
 #!/bin/sh
 URL="http://ufpr.dl.sourceforge.net/project/efw/Development/EFW-3.0.5-beta1/"
 ISO="EFW-COMMUNITY-3.0.5-beta1-devel-201504071248.iso"
-# Comente a linha a baixo se nao precisar de realizar o download do ISO
-wget -t0 -c ${URL} -v -O ${ISO}
+
+if [ ! -f ${ISO} ]; then
+	wget -t0 -c ${URL} -v -O ${ISO}
+fi
 
 if [ "$(id -u)" != "0" ]; then
 	clear
