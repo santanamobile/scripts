@@ -1,33 +1,34 @@
 #!/bin/sh
-DATE=$(date +"%Y%m%d")
-TIME=$(date +"%H%M")
-TIMESTAMP="${DATA}-${TIME}"
-HOST="127.0.0.1"
-USER="root"
-PASS="pass"
-BACKUPDIR="/backup/sgbd/"
-DATABASE="zabbix"
+#
+# Author: @santanamobile
+# Backup Script for Zabbix database
+#
 
-ARQ="${BACKUPDIR}${TIMESTAMP}-${BD}.sql"
+DATE=$(date +"%Y/%m/%d")
+HOST=$(hostname)
+LOCATION="/backup/${DATE}/${HOST}/databases"
+USER="rootuser"
+PASS="rootpass"
+DUMP_PARAMS="--add-drop-database --add-drop-table --complete-insert --single-transaction --lock-tables --default-character-set=utf8mb4 "
+DATABASES="zabbix"
 
-if [ ! -d ${BACKUPDIR} ]; then
-        mkdir -p ${BACKUPDIR}
+if [ ! -d ${LOCATION} ]; then
+        mkdir -p ${LOCATION}
 fi;
 
-mysqldump -u ${USER} -p ${PASS} \
-	--ignore-table=${DATABASE}.acknowledges \
-	--ignore-table=${DATABASE}.alerts \
-	--ignore-table=${DATABASE}.auditlog \
-	--ignore-table=${DATABASE}.auditlog_details \
-	--ignore-table=${DATABASE}.escalations \
-	--ignore-table=${DATABASE}.events \
-	--ignore-table=${DATABASE}.history \
-	--ignore-table=${DATABASE}.history_log \
-	--ignore-table=${DATABASE}.history_str \
-	--ignore-table=${DATABASE}.history_str_sync \
-	--ignore-table=${DATABASE}.history_sync \
-	--ignore-table=${DATABASE}.history_text \
-	--ignore-table=${DATABASE}.history_uint \
-	--ignore-table=${DATABASE}.history_uint_sync \
-	--ignore-table=${DATABASE}.trends \
-	--ignore-table=${DATABASE}.trends_uint > ${ARQ}
+echo "--------------------------------------------------"
+for DATABASE in ${DATABASES}; do
+	FILE="${LOCATION}/${DATABASE}.sql"
+	echo -n "Database ${DATABASE}: "
+	mysqldump -u ${USER} -p${PASS} ${DUMP_PARAMS} --databases ${DATABASE} > ${FILE}
+	echo "ok"
+done;
+
+echo "--------------------------------------------------"
+for DATABASE in ${DATABASES}; do
+	FILE="${LOCATION}/${DATABASE}.sql"
+	echo -n "Packing ${DATABASE}: "
+	bzip2 ${FILE}
+	echo "ok"
+done;
+echo "--------------------------------------------------"
