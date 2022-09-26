@@ -13,6 +13,9 @@ fi;
 
 export PATH="${PATH}:${LOCATION}"
 
+mkdir $HOME/Arduino
+mkdir $HOME/Arduino/libraries
+
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh 
 
 # arduino-cli config init --additional-urls https://downloads.arduino.cc/packages/package_staging_index.json,https://dl.espressif.com/dl/package_esp32_index.json,https://arduino.esp8266.com/stable/package_esp8266com_index.json
